@@ -135,21 +135,21 @@ export default function ChatWidget() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Area (Padding Kanan Ditingkatkan) */}
+        {/* Input Area (Padding Kanan Ditingkatkan menjadi pr-20) */}
         <div className="p-3 border-t border-gray-100 bg-white max-sm:pb-6">
           <div className="relative flex items-center">
-            {/* Input Field: pr-14 diubah menjadi pr-16 */}
+            {/* Input Field: pr-16 diubah menjadi pr-20 */}
             <input
               ref={inputRef}
               type="text"
-              className="flex-1 px-4 py-4 pr-16 border border-gray-300 rounded-full text-sm focus:outline-none transition disabled:bg-gray-100 h-14" // pr-14 diubah menjadi pr-16
+              className="flex-1 px-4 py-4 pr-20 border border-gray-300 rounded-full text-sm focus:outline-none transition disabled:bg-gray-100 h-14" // pr-16 diubah menjadi pr-20
               placeholder="Ketik pesan..."
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
               disabled={isLoading}
             />
-            {/* Send Button: Posisi tetap untuk menyesuaikan dengan padding input yang baru */}
+            {/* Send Button: Posisi tetap (absolute right-1) */}
             <button
               onClick={handleSendMessage}
               disabled={isLoading || !inputValue.trim()}
@@ -188,4 +188,4 @@ export default function ChatWidget() {
 
     </div>
   );
-}
+  }
