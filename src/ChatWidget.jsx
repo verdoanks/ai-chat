@@ -19,7 +19,7 @@ export default function ChatWidget() {
   ]);
 
   const messagesEndRef = useRef(null);
-  const inputRef = useRef(null);
+  const inputRef = useRef(null); // Ref ini sekarang digunakan untuk textarea
 
   // Auto scroll
   useEffect(() => {
@@ -31,6 +31,16 @@ export default function ChatWidget() {
     if (isOpen) setTimeout(() => inputRef.current?.focus(), 100);
   }, [isOpen]);
 
+  // Auto-size untuk textarea (input)
+  useEffect(() => {
+    if (inputRef.current) {
+      // Reset tinggi
+      inputRef.current.style.height = 'auto'; 
+      // Set tinggi ke scroll height (membuatnya menyesuaikan konten)
+      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`; 
+    }
+  }, [inputValue]);
+  
   // Formatter pesan (HTML & Code Block)
   const formatMessage = (text) => {
     let content = text
@@ -135,28 +145,42 @@ export default function ChatWidget() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Area */}
-        <div className="p-3 border-t border-gray-100 bg-white flex items-center gap-2 max-sm:pb-6">
-          <input
-            ref={inputRef}
-            type="text"
-            className="flex-1 p-2.5 border border-gray-300 rounded-full text-sm focus:outline-none focus:border-blue-500 transition disabled:bg-gray-100"
-            placeholder="Ketik pesan..."
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-            disabled={isLoading}
-          />
-          <button
-            onClick={handleSendMessage}
-            disabled={isLoading || !inputValue.trim()}
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white shadow-md hover:opacity-90 active:scale-95 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
-            style={{ backgroundColor: CONFIG.primaryColor }}
-          >
-            <svg className="w-5 h-5 ml-0.5" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-            </svg>
-          </button>
+        {/* Input Area BARU */}
+        <div className="p-3 border-t border-gray-100 bg-white max-sm:pb-6">
+          <div className="relative">
+            <textarea
+              ref={inputRef}
+              rows={1} // Mulai dengan 1 baris
+              // Sesuaikan styling untuk textarea: min-height, padding kanan untuk tombol, overflow-y-auto, resize-none, rounded-2xl
+              className="w-full min-h-[44px] max-h-40 p-2.5 pr-12 border border-gray-300 rounded-2xl text-sm focus:outline-none focus:border-blue-500 transition disabled:bg-gray-100 overflow-y-auto resize-none"
+              placeholder="Tanyakan apa saja" // Ubah placeholder agar lebih mirip referensi
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) { // Kirim saat Enter, kecuali jika Shift+Enter (untuk baris baru)
+                  e.preventDefault();
+                  handleSendMessage();
+                }
+              }}
+              disabled={isLoading}
+            />
+            
+            {/* Tombol Kirim di dalam input area (absolute positioning) */}
+            <div className="absolute right-2 bottom-2"> 
+              <button
+                onClick={handleSendMessage}
+                disabled={isLoading || !inputValue.trim()}
+                // Ubah ukuran dan bentuk tombol agar lebih mirip referensi (w-8 h-8, rounded-xl)
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-white shadow-md hover:opacity-90 active:scale-95 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+                style={{ backgroundColor: CONFIG.primaryColor }}
+              >
+                {/* Icon Panah Atas (seperti referensi ChatGPT) */}
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M13 7.025l2.457 2.457L17 8.542l-5-5-5 5 1.543 1.54L11 7.024v13.976h2z" />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Footer / Watermark */}
@@ -184,4 +208,4 @@ export default function ChatWidget() {
 
     </div>
   );
-      }
+}
